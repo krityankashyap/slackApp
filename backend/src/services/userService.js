@@ -12,7 +12,7 @@ export const signUpService = async (data)=>{
       throw new ValidationError({
         error: error.errors, // inside this error methods there is a errors property which is kind of like a object which puts all the errors in cage
       },
-    error.message);
+        error.message);
     };
 
    if(error.name == 'MongoServerError' && error.code == 11000){
