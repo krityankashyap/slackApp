@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
-import { customErrorResponse, internalResponse, sucessResponse } from "../utils/commons/responseObject";
-import { signUpService } from "../services/userService";
+import { customErrorResponse, internalResponse, sucessResponse } from "../utils/commons/responseObject.js";
+import { signUpService } from "../services/userService.js";
 
 export const signup = async (req , res) => {
   try {
