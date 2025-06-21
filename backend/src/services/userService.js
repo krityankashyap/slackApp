@@ -1,5 +1,8 @@
+import { StatusCodes } from "http-status-codes";
 import userReopsitory from "../repositories/userRepository.js"
+import ClientError from "../utils/errors/clientError.js";
 import ValidationError from "../utils/errors/validationError.js";
+import bcrypt from "bcrypt"
 
 export const signUpService = async (data)=>{
   try {
@@ -23,4 +26,37 @@ export const signUpService = async (data)=>{
    }
   }
   
+};
+
+export const signInService = async (data)=>{
+  try {
+    const user = await userReopsitory.getByEmail(data.email);
+
+    if(!user){ // if user isn't present i.e, the email that is provided isn't registered on the platform and this isn't validation error this is client error
+    throw new ClientError({
+      explanation: "Invalid email send by client",
+      message: "No registered user found with this email",
+      statusCodes: StatusCodes.NOT_FOUND
+    })
+
+    };
+    // after this we have to matched the password with the hased password
+   const isMatched = bcrypt.compareSync(data.password , user.password);
+
+   if(!isMatched){
+    throw new ClientError({
+      explanation: "Invalid email send by client",
+      message: "Password is incorrect",
+      statusCodes: StatusCodes.BAD_REQUEST
+    });
+   };
+
+   // if password and email both r correct then we have to send the token
+
+   
+
+  } catch (error) {
+    console.log("signIn error" , error);
+  }
+ 
 }
