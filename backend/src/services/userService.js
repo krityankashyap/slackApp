@@ -3,6 +3,7 @@ import userReopsitory from "../repositories/userRepository.js"
 import ClientError from "../utils/errors/clientError.js";
 import ValidationError from "../utils/errors/validationError.js";
 import bcrypt from "bcrypt"
+import { createJWT } from "../utils/commons/authUtils.js";
 
 export const signUpService = async (data)=>{
   try {
@@ -52,11 +53,17 @@ export const signInService = async (data)=>{
    };
 
    // if password and email both r correct then we have to send the token
+   return {
+    username: user.username,
+    avatar: user.avatar,
+    email: user.email,
+    token: createJWT({id: user._id , email: user.email})
+   }
 
-   
 
   } catch (error) {
     console.log("signIn error" , error);
+    throw error;
   }
  
 }
