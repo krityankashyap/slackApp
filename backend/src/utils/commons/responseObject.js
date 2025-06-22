@@ -21,7 +21,7 @@ export const customErrorResponse = (error) =>{
   };
 };
 
-export const sucessResponse = (data , message)=>{
+export const successResponse = (data , message)=>{
   return {
     success: true,
     message: message,

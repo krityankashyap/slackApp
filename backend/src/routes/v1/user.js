@@ -1,7 +1,8 @@
 import express from 'express';
-import { signup } from '../../controller/userController.js';
+import { signIn, signup } from '../../controller/userController.js';
 import { validate } from '../../validators/zodValidator.js';
-import { userSignupSchema } from '../../validators/userValidator.js';
+import { userSigninSchema, userSignupSchema } from '../../validators/userValidator.js';
+
 
 const userRouter = express.Router();
 
@@ -12,5 +13,6 @@ userRouter.get('/ping' , (req , res)=>{
 });
 
 userRouter.post('/signup' , validate(userSignupSchema) , signup);
+userRouter.post('/signin' ,  validate(userSigninSchema) , signIn)
 
 export default userRouter

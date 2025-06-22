@@ -5,7 +5,7 @@ const userReopsitory = {
   ...crudRepo(User), // destructure the crudRepo with User model
 
   getByEmail: async function (email){
-    const result = await User.findOne({ Useremail: email });
+    const result = await User.findOne({ email: email }); 
     return result;
   },
   
