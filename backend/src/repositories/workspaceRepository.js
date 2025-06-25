@@ -3,6 +3,7 @@ import WorkspaceModel from "../schema/workSpaceSchema.js";
 import ClientError from "../utils/errors/clientError.js";
 import crudRepo from "./crudRepository.js";
 import User from "../schema/user.js";
+import channelReopsitory from "./channelRepository.js";
 
 const workSpaceRepository = {
   ...crudRepo(WorkspaceModel),
@@ -76,8 +77,41 @@ const workSpaceRepository = {
 
     return workspace
   },
-  addChanneltoWorkspace: async function () {},
-  fetchAllWorkspaceByMemberId: async function () {}
+  addChanneltoWorkspace: async function (workspaceId , channelName) {
+    const workSpace = await WorkspaceModel.findById(workspaceId).populate('channels');
+
+    if(!workSpace){
+      throw new ClientError({
+        explanation: "Invalid data sent from client",
+        message: "Workspace not found",
+        statusCode: StatusCodes.NOT_FOUND
+      })
+    }
+
+    const isChannelAlreadyPartOfWorkspace = workSpace.channels.find((channel) => channel.name == channelName);
+
+    if(isChannelAlreadyPartOfWorkspace){ // if channel is already present
+      throw new ClientError({
+        explanation: "Invalid data sent from client",
+        message: "Channel already exists in workspace",
+        statusCode: StatusCodes.BAD_REQUEST
+      })
+    }
+
+    // if channel isn't present then we have to create the channel therefore we have to make channel repository
+    const channel = await channelReopsitory.create({name: channelName});
+
+    workSpace.channels.push(channel);
+    await workSpace.save();
+
+    return workSpace;
+  },
+  fetchAllWorkspaceByMemberId: async function (memberId) {
+    const workspaces = await WorkspaceModel.find({
+      'members.memberId' : memberId
+    }).populate('members.memberId' , 'username email avatar');
+    return workspaces;
+  }
 };
 
 export default workSpaceRepository;
