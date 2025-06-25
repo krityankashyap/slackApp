@@ -34,4 +34,6 @@ const workSpaceSchema = new mongoose.Schema({
   ]
 });
 
-const ChannelModel = mongoose.model("Workspace" , workSpaceSchema)
+const WorkspaceModel = mongoose.model("Workspace" , workSpaceSchema);
+
+export default WorkspaceModel;

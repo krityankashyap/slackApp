@@ -6,6 +6,7 @@ import bcrypt from "bcrypt"
 import { createJWT } from "../utils/commons/authUtils.js";
 
 export const signUpService = async (data)=>{
+  console.log("Signup service ",data)
   try {
     const newUser = await userRepository.create(data);
     return newUser;
