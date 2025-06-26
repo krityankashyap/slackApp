@@ -9,7 +9,7 @@ const workSpaceSchema = new mongoose.Schema({
   description: { 
     type: String
   },
-  members: [
+  members: [ // this is an array of object for members where it has memberId references from "User-table" and role of member 
     {
       memberId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -22,11 +22,11 @@ const workSpaceSchema = new mongoose.Schema({
       },
     }
   ],
-  joinCode: {
+  joinCode: { 
     type: String,
     required: [true, "joinCode is necessary"], // Fixed typo: "neccessary" -> "necessary"
   },
-  channels: [
+  channels: [ // this is an array of object for member where it hs channelId references from "Channel-table"
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Channel"
