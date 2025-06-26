@@ -1,6 +1,5 @@
 export default function crudRepo(model){
   return {
-
     create: async function (data){
       const newDoc = await model.create(data);
       return newDoc;
@@ -15,16 +14,19 @@ export default function crudRepo(model){
       const getDocs = await model.findById(id);
       return getDocs;
     },
+    
+    // Fixed: Use correct Mongoose method
     delete: async function (id){
-      const response = await model.destroy(id);
+      const response = await model.findByIdAndDelete(id);
       return response;
     },
-    update: async function (id , data){
-      const updateDoc = await model.Update(id , data , {
-        new : true
+    
+    // Fixed: Use correct Mongoose method and capitalization
+    update: async function (id, data){
+      const updateDoc = await model.findByIdAndUpdate(id, data, {
+        new: true
       });
       return updateDoc;
     }
-
   }
 }

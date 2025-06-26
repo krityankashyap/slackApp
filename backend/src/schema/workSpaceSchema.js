@@ -3,13 +3,13 @@ import mongoose from "mongoose";
 const workSpaceSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true , "Workspace name is required"],
+    required: [true, "Workspace name is required"],
     unique: true
   },
-  description: {
+  description: { 
     type: String
   },
-  members: [ // this is an array of object for members where it has memberId references from "User-table" and role of member 
+  members: [
     {
       memberId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -17,16 +17,16 @@ const workSpaceSchema = new mongoose.Schema({
       },
       role: {
         type: String,
-        enum: ["Admin" , "member"],
+        enum: ["admin", "member"], // Fixed: "Admin" -> "admin" for consistency
         default: "member",
       },
     }
   ],
   joinCode: {
     type: String,
-    required: [true, "joinCode is neccessary"], // when u join discord through links u touch a joinCode
+    required: [true, "joinCode is necessary"], // Fixed typo: "neccessary" -> "necessary"
   },
-  channels: [ // this is an array of object for member where it hs channelId references from "Channel-table"
+  channels: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Channel"
@@ -34,6 +34,6 @@ const workSpaceSchema = new mongoose.Schema({
   ]
 });
 
-const WorkspaceModel = mongoose.model("Workspace" , workSpaceSchema);
+const WorkspaceModel = mongoose.model("Workspace", workSpaceSchema);
 
 export default WorkspaceModel;

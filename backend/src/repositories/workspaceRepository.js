@@ -8,48 +8,51 @@ import channelReopsitory from "./channelRepository.js";
 const workSpaceRepository = {
   ...crudRepo(WorkspaceModel),
   getworkspaceByName: async function (workspaceName) {
-    const workspace = await WorkspaceModel.findById({
+    // Fixed: Use findOne instead of findById for name search
+    const workspace = await WorkspaceModel.findOne({
       name: workspaceName
     });
 
     if(!workspace){
       throw new ClientError({
-        explanation: "Invalid data send from client",
-        message: "No workspace find",
+        explanation: "Invalid data sent from client",
+        message: "No workspace found",
         statusCode: StatusCodes.NOT_FOUND
       });
     }
 
     return workspace;
-
   },
+  
   getworkspaceByJoincode: async function (joinCode) {
-    const response = await WorkspaceModel.findById({
+    // Fixed: Use findOne instead of findById for joinCode search
+    const response = await WorkspaceModel.findOne({
       joinCode: joinCode
     });
 
     if(!response){
       throw new ClientError({
-        explation: "Invalid data send from client",
-        message: "Invalid joinCode ",
+        explanation: "Invalid data sent from client", // Fixed typo: "explation" -> "explanation"
+        message: "Invalid joinCode",
         statusCode: StatusCodes.BAD_REQUEST
       });
     }
 
     return response;
   },
-  addMembertoWorkspace: async function (workspaceId , memberId , role) {
+  
+  addMembertoWorkspace: async function (workspaceId, memberId, role) {
     const workspace = await WorkspaceModel.findById(workspaceId);
 
     if(!workspace){
       throw new ClientError({
-        explanation: "Invalid data send from client",
+        explanation: "Invalid data sent from client",
         message: "Workspace not found",
         statusCode: StatusCodes.NOT_FOUND
       });
     }
+    
     const isValidUser = await User.findById(memberId);
-
     if(!isValidUser){
       throw new ClientError({
         explanation: "Invalid data sent from client",
@@ -58,26 +61,34 @@ const workSpaceRepository = {
       });
     }
 
-    const isUserAlreadyPartOfWorkspace = workspace.members.find((members) => members.memberId = memberId);
+    // Fixed: Use === for comparison instead of = for assignment
+    // Fixed: Convert ObjectId to string for proper comparison
+    const isUserAlreadyPartOfWorkspace = workspace.members.find(
+      (member) => member.memberId.toString() === memberId.toString()
+    );
 
-    if(!isUserAlreadyPartOfWorkspace){
+    // Fixed: Corrected logic - throw error if user IS already part of workspace
+    if(isUserAlreadyPartOfWorkspace){
       throw new ClientError({
         explanation: "Invalid data sent from client",
         message: "User already part of workspace",
         statusCode: StatusCodes.FORBIDDEN
       });
     }
-    // now if workspace is present then inside the member array of WorkspaceModel we have to push memberid and role
+    
+    // Add member to workspace
     workspace.members.push({
       memberId,
       role
     });
 
-    workspace.save(); // this function save the updated data
+    // Fixed: Add await for save operation
+    await workspace.save();
 
-    return workspace
+    return workspace;
   },
-  addChanneltoWorkspace: async function (workspaceId , channelName) {
+  
+  addChanneltoWorkspace: async function (workspaceId, channelName) {
     const workSpace = await WorkspaceModel.findById(workspaceId).populate('channels');
 
     if(!workSpace){
@@ -85,20 +96,22 @@ const workSpaceRepository = {
         explanation: "Invalid data sent from client",
         message: "Workspace not found",
         statusCode: StatusCodes.NOT_FOUND
-      })
+      });
     }
 
-    const isChannelAlreadyPartOfWorkspace = workSpace.channels.find((channel) => channel.name == channelName);
+    const isChannelAlreadyPartOfWorkspace = workSpace.channels.find(
+      (channel) => channel.name === channelName
+    );
 
-    if(isChannelAlreadyPartOfWorkspace){ // if channel is already present
+    if(isChannelAlreadyPartOfWorkspace){
       throw new ClientError({
         explanation: "Invalid data sent from client",
         message: "Channel already exists in workspace",
         statusCode: StatusCodes.BAD_REQUEST
-      })
+      });
     }
 
-    // if channel isn't present then we have to create the channel therefore we have to make channel repository
+    // Create new channel
     const channel = await channelReopsitory.create({name: channelName});
 
     workSpace.channels.push(channel);
@@ -106,10 +119,11 @@ const workSpaceRepository = {
 
     return workSpace;
   },
+  
   fetchAllWorkspaceByMemberId: async function (memberId) {
     const workspaces = await WorkspaceModel.find({
-      'members.memberId' : memberId
-    }).populate('members.memberId' , 'username email avatar');
+      'members.memberId': memberId
+    }).populate('members.memberId', 'username email avatar');
     return workspaces;
   }
 };
