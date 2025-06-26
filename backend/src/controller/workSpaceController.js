@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { createWorkSpaceService } from "../services/workspaceService.js"
+import { createWorkSpaceService, getWorkspaceUserIsMemberService } from "../services/workspaceService.js"
 import { customErrorResponse, internalResponse, successResponse } from "../utils/commons/responseObject.js";
 
 export const createWorkspaceController = async (req , res) => {
@@ -21,4 +21,13 @@ export const createWorkspaceController = async (req , res) => {
   }
 };
 
-export default createWorkspaceController;
+export const getWorkspaceUserIsMemberController = async (req , res) => {
+  try {
+    console.log("workspace controller ",req.user);
+    const response = await getWorkspaceUserIsMemberService(req.user);
+    return res.status(StatusCodes.OK).json(successResponse(response , "Workspace fetched successfully"));
+  } catch (error) {
+    console.log(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(internalResponse(error));
+  }
+}
